@@ -75,11 +75,11 @@ def run(config: Config) -> None:
         tty.setcbreak(sys.stdin.fileno())
 
     try:
-        thinking_buffer = ScrollBuffer(height=tui_config.thinking_panel_height)
-        content_buffer = ScrollBuffer(height=tui_config.panel_height)
+        thinking_buffer = ScrollBuffer()
+        content_buffer = ScrollBuffer()
         thinking_queue: queue.Queue[str] = queue.Queue()
         should_quit = [False]
-        response: list[str | None] = [None]
+        response: list[str] = [""]
 
         agent = create_agent(config.model, config.agent)
 
@@ -93,7 +93,7 @@ def run(config: Config) -> None:
                         thinking_queue.put(reasoning)
                     content = getattr(chunk, "content", None)
                     if content:
-                        response[0] = content
+                        response[0] += content
                         content_buffer.add(content)
             except Exception as e:
                 thinking_queue.put(f"Error: {e}")
@@ -104,13 +104,11 @@ def run(config: Config) -> None:
                     Text("..."),
                     title=tui_config.thinking_panel_title,
                     border_style="blue",
-                    height=tui_config.thinking_panel_height,
                 ),
                 Panel(
                     Text(""),
                     title=tui_config.response_panel_title,
                     border_style="cyan",
-                    height=tui_config.panel_height,
                 ),
             ),
             console=console,
@@ -137,13 +135,11 @@ def run(config: Config) -> None:
                             Text(thinking_buffer.show()),
                             title=tui_config.thinking_panel_title,
                             border_style="blue",
-                            height=tui_config.thinking_panel_height,
                         ),
                         Panel(
                             Text(content_buffer.show()),
                             title=tui_config.response_panel_title,
                             border_style="cyan",
-                            height=tui_config.panel_height,
                         ),
                     )
                 )
@@ -175,34 +171,16 @@ def run(config: Config) -> None:
                                 Text(thinking_buffer.show()),
                                 title=tui_config.thinking_panel_title,
                                 border_style="blue",
-                                height=tui_config.thinking_panel_height,
                             ),
                             Panel(
                                 Text(content_buffer.show()),
                                 title=tui_config.response_panel_title,
                                 border_style="cyan",
-                                height=tui_config.panel_height,
                             ),
                         )
                     )
 
-        console.print(
-            Panel(
-                Text(thinking_buffer.show() or "(thinking hidden)"),
-                title=tui_config.thinking_panel_title,
-                border_style="blue",
-                box=box.ROUNDED,
-            )
-        )
-        console.print(
-            Panel(
-                Text(response[0] or "(done)"),
-                title=tui_config.response_panel_title,
-                border_style="cyan",
-                box=box.ROUNDED,
-            )
-        )
-        console.print("[green]Done![/green]")
+        console.print(f"[green]Command:[/green] {response[0].strip() or '(none)'}")
 
     finally:
         if old_settings:

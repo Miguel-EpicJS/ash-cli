@@ -25,8 +25,8 @@ class AgentConfig:
 
 @dataclass
 class TUIConfig:
-    panel_height: int = 17
-    thinking_panel_height: int = 17
+    panel_height: int = 8
+    thinking_panel_height: int = 8
     refresh_rate: int = 8
     input_panel_title: str = "Input"
     thinking_panel_title: str = "Thinking"
@@ -38,7 +38,6 @@ class Config:
     model: ModelConfig = field(default_factory=ModelConfig)
     agent: AgentConfig = field(default_factory=AgentConfig)
     tui: TUIConfig = field(default_factory=TUIConfig)
-    default_prompt: str = "Explain what 1+1 equals"
 
 
 def get_config() -> Config:
