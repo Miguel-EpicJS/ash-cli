@@ -9,7 +9,6 @@ import threading
 import tty
 
 import pyperclip
-
 from rich import box
 from rich.console import Console, Group
 from rich.live import Live
@@ -90,7 +89,9 @@ def run(config: Config) -> None:
                 if cmd in ("/quit", "/q", "/exit"):
                     break
                 elif cmd == "/help":
-                    console.print("[dim]Commands: /quit, /q - exit | /help - show this[/dim]")
+                    console.print(
+                        "[dim]Commands: /quit, /q - exit | /help - show this[/dim]"
+                    )
                     continue
 
             console.print(
@@ -198,7 +199,11 @@ def run(config: Config) -> None:
                     key = sys.stdin.read(1)
                     key = key.lower()
                     if key == "e" or key == "\r":
-                        cmd = response[0].strip().split()[0] if response[0].strip() else ""
+                        cmd = (
+                            response[0].strip().split()[0]
+                            if response[0].strip()
+                            else ""
+                        )
                         if cmd:
                             check = subprocess.run(
                                 f"command -v {shlex.quote(cmd)}",
