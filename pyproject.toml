@@ -1,0 +1,9 @@
+[project]
+name = "ash-cli"
+version = "0.1.0"
+description = "Local AI agent using Agno and llama.cpp"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "agno>=2.0.0",
+]
