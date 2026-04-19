@@ -1,11 +1,30 @@
 import argparse
+import sys
 
 from .config import Args, get_config
+from .error import (
+    ValidationError,
+    validate_arg_range,
+    validate_non_empty,
+    validate_positive,
+    validate_url,
+)
 from .tui import run
 
 
 def _get_version() -> str:
     return "0.1.0"
+
+
+def _validate_args(args: Args) -> None:
+    if args.model is not None:
+        validate_non_empty(args.model, "--model")
+    if args.temperature is not None:
+        validate_arg_range(args.temperature, 0.0, 2.0, "--temp")
+    if args.max_tokens is not None:
+        validate_positive(args.max_tokens, "--max-tokens")
+    if args.url is not None:
+        validate_url(args.url, "--url")
 
 
 def _parse_args() -> Args:
@@ -34,6 +53,11 @@ def _parse_args() -> Args:
 
 def main() -> None:
     args = _parse_args()
+    try:
+        _validate_args(args)
+    except ValidationError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
     config = get_config(args=args)
     run(config)
 

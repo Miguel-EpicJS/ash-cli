@@ -10,6 +10,8 @@ from typing import Any
 import yaml
 from dotenv import load_dotenv
 
+from ash_cli.logging import Level, LoggingConfig
+
 
 def _find_project_root() -> Path:
     current = Path(__file__).resolve().parent
@@ -77,6 +79,7 @@ class Config:
     model: ModelConfig = field(default_factory=ModelConfig)
     agent: AgentConfig = field(default_factory=AgentConfig)
     tui: TUIConfig = field(default_factory=TUIConfig)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
 
 
 def _get_default_config_dir() -> Path:
@@ -161,6 +164,12 @@ def _apply_env(config: Config) -> Config:
         config.model.temperature = float(temperature)
     if max_tokens := os.environ.get("ASH_MAX_TOKENS"):
         config.model.max_tokens = int(max_tokens)
+    if log_level := os.environ.get("ASH_LOG_LEVEL"):
+        config.logging.level = Level[log_level.upper()]
+    if log_file := os.environ.get("ASH_LOG_FILE"):
+        config.logging.file = Path(log_file)
+    if log_format := os.environ.get("ASH_LOG_FORMAT"):
+        config.logging.format = log_format  # type: ignore[assignment]
     return config
 
 

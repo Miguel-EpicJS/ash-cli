@@ -1,11 +1,13 @@
 import os
 import queue
+import re
 import select
 import shlex
 import subprocess
 import sys
 import termios
 import threading
+import time as time_module
 import tty
 
 import pyperclip
@@ -18,6 +20,7 @@ from rich.text import Text
 from .agent import create_agent
 from .buffer import ScrollBuffer
 from .config import Config
+from .error import ConnectionError, RetryConfig, TimeoutError
 
 
 def get_user_input(console: Console, is_tty: bool, is_multi: bool = False) -> str:
@@ -67,6 +70,16 @@ def get_user_input(console: Console, is_tty: bool, is_multi: bool = False) -> st
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
 
+def _run_fallback(prompt: str) -> str:
+    cmd_match = re.search(r"`?(.+?)`?", prompt)
+    if cmd_match:
+        return cmd_match.group(1).strip()
+    words = prompt.strip().split()
+    if words and words[0].lower() in ("ls", "cd", "pwd", "cat", "echo", "grep", "find"):
+        return words[0] + " " + " ".join(words[1:])
+    return "echo 'API unavailable - please try again later'"
+
+
 def run(config: Config) -> None:
     console = Console()
     tui_config = config.tui
@@ -108,23 +121,43 @@ def run(config: Config) -> None:
             thinking_queue: queue.Queue[str] = queue.Queue()
             should_quit = [False]
             response: list[str] = [""]
+            use_fallback = [False]
 
-            agent = create_agent(config.model, config.agent, session_id=session_id)
+            retry_config = RetryConfig(max_retries=3, base_delay=1.0)
 
             def stream_agent() -> None:
-                try:
-                    for chunk in agent.run(prompt, stream=True):
-                        if should_quit[0]:
-                            break
-                        reasoning = getattr(chunk, "reasoning_content", None)
-                        if reasoning:
-                            thinking_queue.put(reasoning)
-                        content = getattr(chunk, "content", None)
-                        if content:
-                            response[0] += content
-                            content_buffer.add(content)
-                except Exception as e:
-                    thinking_queue.put(f"Error: {e}")
+                retry_count = 0
+
+                while retry_count < retry_config.max_retries:
+                    try:
+                        agent = create_agent(
+                            config.model, config.agent, session_id=session_id
+                        )
+                        for chunk in agent.run(prompt, stream=True):
+                            if should_quit[0]:
+                                break
+                            reasoning = getattr(chunk, "reasoning_content", None)
+                            if reasoning:
+                                thinking_queue.put(reasoning)
+                            content = getattr(chunk, "content", None)
+                            if content:
+                                response[0] += content
+                                content_buffer.add(content)
+                        break
+                    except (ConnectionError, TimeoutError) as e:
+                        retry_count += 1
+                        if retry_count < retry_config.max_retries:
+                            delay = retry_config.base_delay * (2 ** (retry_count - 1))
+                            thinking_queue.put(
+                                f"Retry {retry_count}/{retry_config.max_retries} after {delay}s..."
+                            )
+                            time_module.sleep(delay)
+                        else:
+                            use_fallback[0] = True
+                            thinking_queue.put(f"Fallback mode: {e}")
+                    except Exception as e:
+                        thinking_queue.put(f"Error: {e}")
+                        break
 
             with Live(
                 Group(
@@ -189,6 +222,9 @@ def run(config: Config) -> None:
                                 ),
                             )
                         )
+
+                if use_fallback[0] and not response[0].strip():
+                    response[0] = _run_fallback(prompt)
 
             console.print(f"[green]Command:[/green] {response[0].strip() or '(none)'}")
 
