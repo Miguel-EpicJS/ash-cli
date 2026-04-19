@@ -66,6 +66,7 @@ class AgentConfig:
             "You are a CLI assistant that outputs bash commands based on user instructions.",
             "Analyze the user's request and output ONLY the bash command(s) needed to accomplish the task.",
             "Respond with ONLY the command, no explanation or markdown formatting.",
+            "Do not use markdown code format, output only plain text",
         )
     )
     markdown: bool = False

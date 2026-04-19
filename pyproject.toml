@@ -19,6 +19,12 @@ dependencies = [
     "readchar>=4.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-mock>=3.14.0",
+]
+
 [project.scripts]
 ash-cli = "ash_cli.__main__:main"
 
