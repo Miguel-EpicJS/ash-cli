@@ -26,34 +26,34 @@
 
 ```mermaid
 flowchart TD
-    subgraph Core["🔵 Core Infrastructure"]
-        config["Config System<br/>[M]"]
-        logging["Logging<br/>[S]"]
-        error["Error Handling<br/>[M]"]
+    subgraph Core["Core Infrastructure"]
+        config("Config System [M]")
+        logging("Logging [S]")
+        error("Error Handling [M]")
     end
 
-    subgraph Sessions["⚪ Sessions & Testing"]
-        sessions["Session Storage<br/>[M]"]
-        history["Command History<br/>[S]"]
-        testing["Testing<br/>[L]"]
+    subgraph Sessions["Sessions & Testing"]
+        sessions("Session Storage [M]")
+        history("Command History [S]")
+        testing("Testing [L]")
     end
 
-    subgraph Features["🟢 Features"]
-        multimodel["Multi-Model<br/>[M]"]
-        tui["Enhanced TUI<br/>[L]"]
-        tools["Tools Integration<br/>[M]"]
-        output["Output Options<br/>[S]"]
+    subgraph Features["Features"]
+        multimodel("Multi-Model [M]")
+        tui("Enhanced TUI [L]")
+        tools("Tools Integration [M]")
+        output("Output Options [S]")
     end
 
-    subgraph Observability["🔵 Observability"]
-        tracing["Tracing<br/>[M]"]
-        metrics["Metrics<br/>[S]"]
-        debug["Debug Mode<br/>[S]"]
+    subgraph Observability["Observability"]
+        tracing("Tracing [M]")
+        metrics("Metrics [S]")
+        debug("Debug Mode [S]")
     end
 
-    subgraph Distribution["⚪ Distribution"]
-        pypi["PyPI Package<br/>[M]"]
-        completions["Shell Completions<br/>[S]"]
+    subgraph Distribution["Distribution"]
+        pypi("PyPI Package [M]")
+        completions("Shell Completions [S]")
     end
 
     logging --> tracing
@@ -68,13 +68,9 @@ flowchart TD
     tracing --> metrics
     tracing --> debug
     testing --> pypi
-    features([Features]) --> multimodel
-    features --> tui
-    features --> tools
-    features --> output
 
     style Core fill:#cce5ff,stroke:#007bff
-    style Sessions fill:#fff3cd,stroke:#ffc107
+    style Sessions fill:#e2e3e5,stroke:#6c757d
     style Features fill:#d4edda,stroke:#28a745
     style Observability fill:#cce5ff,stroke:#007bff
     style Distribution fill:#e2e3e5,stroke:#6c757d
@@ -86,24 +82,21 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph Config[Config System [M]]
-        A[".env support"] --> B[CLI Args]
-        B --> C[Config file]
-    end
-
-    subgraph Logging[Logging [S]]
-        D[Log levels] --> E[JSON output]
-        E --> F[File rotation]
-    end
-
-    subgraph Error[Error Handling [M]]
-        G[Connection errors] --> H[Retry logic]
-        H --> I[Graceful degradation]
-    end
-
-    style Config fill:#fff3cd,stroke:#ffc107
-    style Logging fill:#d4edda,stroke:#28a745
-    style Error fill:#fff3cd,stroke:#ffc107
+    A0["Config System [M]"] --> A1[".env support"]
+    A1 --> A2[CLI Args]
+    A2 --> A3[Config file]
+    
+    B0["Logging [S]"] --> B1[Log levels]
+    B1 --> B2[JSON output]
+    B2 --> B3[File rotation]
+    
+    C0["Error Handling [M]"] --> C1[Connection errors]
+    C1 --> C2[Retry logic]
+    C2 --> C3[Graceful degradation]
+    
+    style A0 fill:#cce5ff,stroke:#007bff
+    style B0 fill:#cce5ff,stroke:#007bff
+    style C0 fill:#cce5ff,stroke:#007bff
 ```
 
 ### Config System [M]
@@ -132,17 +125,16 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[Session Storage [M]] --> B[History]
-    B --> C[Search]
-    A --> D[Export/Import]
+    A0["Session Storage [M]"] --> A1[History]
+    A1 --> A2[Search]
+    A0 --> A3[Export/Import]
     
-    E[Testing [L]] --> F[Unit Tests]
-    F --> G[Integration Tests]
-    G --> H[CI/CD]
+    B0["Testing [L]"] --> B1[Unit Tests]
+    B1 --> B2[Integration Tests]
+    B2 --> B3[CI/CD]
     
-    style A fill:#fff3cd,stroke:#ffc107
-    style B fill:#e2e3e5,stroke:#6c757d
-    style E fill:#fff3cd,stroke:#ffc107
+    style A0 fill:#e2e3e5,stroke:#6c757d
+    style B0 fill:#e2e3e5,stroke:#6c757d
 ```
 
 ### Session Storage [M]
@@ -165,15 +157,21 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[Multi-Model [M]] --> B[Model Presets]
-    C[Enhanced TUI [L]] --> D[Shortcuts]
-    D --> E[Completions]
-    F[Tools [M]] --> G[Git Tools]
-    G --> H[Custom Tools]
+    A0["Multi-Model [M]"] --> A1[Model presets]
     
-    style A fill:#e2e3e5,stroke:#6c757d
-    style C fill:#e2e3e5,stroke:#6c757d
-    style F fill:#e2e3e5,stroke:#6c757d
+    B0["Enhanced TUI [L]"] --> B1[Shortcuts]
+    B1 --> B2[Completions]
+    
+    C0["Tools [M]"] --> C1[Git tools]
+    C1 --> C2[Custom tools]
+    
+    D0["Output Options [S]"] --> D1[Multiple modes]
+    D1 --> D2[JSON output]
+    
+    style A0 fill:#e2e3e5,stroke:#6c757d
+    style B0 fill:#e2e3e5,stroke:#6c757d
+    style C0 fill:#e2e3e5,stroke:#6c757d
+    style D0 fill:#e2e3e5,stroke:#6c757d
 ```
 
 ### Multi-Model [M]
@@ -195,25 +193,31 @@ flowchart LR
 - [ ] File previews
 - [ ] Custom tools registration
 
+### Output Options [S]
+
+- [ ] Multiple output modes
+- [ ] JSON output mode
+- [ ] Pipe to other commands
+
 ---
 
 ## Phase 4: Observability
 
 ```mermaid
 flowchart LR
-    A[Tracing [M]] --> B[Token tracking]
-    B --> C[Latency metrics]
-    A --> D[Session telemetry]
+    A0["Tracing [M]"] --> A1[Token tracking]
+    A1 --> A2[Latency metrics]
+    A0 --> A3[Session telemetry]
     
-    E[Metrics [S]] --> F[Usage stats]
-    F --> G[API counts]
+    B0["Metrics [S]"] --> B1[Usage stats]
+    B1 --> B2[API counts]
     
-    H[Debug Mode [S]] --> I[Verbose output]
-    I --> J[Payload dump]
+    C0["Debug Mode [S]"] --> C1[Verbose output]
+    C1 --> C2[Payload dump]
     
-    style A fill:#cce5ff,stroke:#007bff
-    style E fill:#cce5ff,stroke:#007bff
-    style H fill:#cce5ff,stroke:#007bff
+    style A0 fill:#cce5ff,stroke:#007bff
+    style B0 fill:#cce5ff,stroke:#007bff
+    style C0 fill:#cce5ff,stroke:#007bff
 ```
 
 ### Tracing [M]
@@ -243,15 +247,15 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[PyPI Package [M]] --> B[PyPI release]
-    A --> C[Versioning]
+    A0["PyPI Package [M]"] --> A1[PyPI release]
+    A1 --> A2[Versioning]
     
-    D[Shell Completions [S]] --> E[bash]
-    E --> F[zsh]
-    F --> G[fish]
+    B0["Shell Completions [S]"] --> B1[bash]
+    B1 --> B2[zsh]
+    B2 --> B3[fish]
     
-    style A fill:#e2e3e5,stroke:#6c757d
-    style D fill:#e2e3e5,stroke:#6c757d
+    style A0 fill:#e2e3e5,stroke:#6c757d
+    style B0 fill:#e2e3e5,stroke:#6c757d
 ```
 
 ### PyPI Package [M]
@@ -272,11 +276,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[“--version” [S]] --> B[“--help”]
-    B --> C[Colored output]
-    C --> D[Config reset]
+    A["--version [S]"] --> B["--help"]
+    B --> C["Colored output"]
+    C --> D["Config reset"]
     
-    style A fill:#fff3cd,stroke:#ffc107
+    style A fill:#cce5ff,stroke:#007bff
 ```
 
 - [ ] Add `--version` flag [S]
@@ -294,15 +298,15 @@ gantt
     dateFormat  YYYY-MM-DD
     
     section v0.2.0
-    Core Config System       :done,    des1, 2025-04-01, 2025-04-07
-    Logging               :active,  des2, 2025-04-05, 2025-04-10
-    Error Handling        :         des3, 2025-04-08, 2025-04-14
+    Core Config System       :active, 2025-04-01, 7d
+    Logging                 :2025-04-05, 5d
+    Error Handling          :2025-04-08, 7d
     
     section v0.3.0
-    Session Storage        :         des4, 2025-04-15, 2025-04-21
-    Testing              :         des5, 2025-04-20, 2025-04-28
+    Session Storage         :2025-04-15, 7d
+    Testing                 :2025-04-20, 8d
     
     section v1.0.0
-    All Features         :         des6, 2025-05-01, 2025-05-15
-    PyPI Release         :         des7, 2025-05-14, 2025-05-21
+    All Features            :2025-05-01, 15d
+    PyPI Release            :2025-05-14, 7d
 ```
