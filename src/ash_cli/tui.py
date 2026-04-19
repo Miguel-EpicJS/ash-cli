@@ -1,6 +1,7 @@
 import os
 import queue
 import select
+import shlex
 import subprocess
 import sys
 import termios
@@ -197,17 +198,27 @@ def run(config: Config) -> None:
                     key = sys.stdin.read(1)
                     key = key.lower()
                     if key == "e" or key == "\r":
-                        proc = subprocess.Popen(
-                            response[0].strip(),
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            shell=True,
-                        )
-                        stdout, stderr = proc.communicate()
-                        if stdout:
-                            console.print(f"[cyan]{stdout.decode()}[/cyan]")
-                        if stderr:
-                            console.print(f"[red]{stderr.decode()}[/red]")
+                        cmd = response[0].strip().split()[0] if response[0].strip() else ""
+                        if cmd:
+                            check = subprocess.run(
+                                f"command -v {shlex.quote(cmd)}",
+                                shell=True,
+                                capture_output=True,
+                            )
+                            if check.returncode != 0:
+                                console.print(f"[red]Error: '{cmd}' not found[/red]")
+                            else:
+                                proc = subprocess.Popen(
+                                    response[0].strip(),
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    shell=True,
+                                )
+                                stdout, stderr = proc.communicate()
+                                if stdout:
+                                    console.print(f"[cyan]{stdout.decode()}[/cyan]")
+                                if stderr:
+                                    console.print(f"[red]{stderr.decode()}[/red]")
                     elif key == "c":
                         try:
                             pyperclip.copy(response[0].strip())
