@@ -12,9 +12,15 @@ class ModelConfig:
 
 @dataclass
 class AgentConfig:
-    description: str = "You are a helpful AI assistant."
-    instructions: tuple[str, ...] = field(default_factory=lambda: ("Think and respond briefly.",))
-    markdown: bool = True
+    description: str = "CLI assistant that outputs bash commands"
+    instructions: tuple[str, ...] = field(
+        default_factory=lambda: (
+            "You are a CLI assistant that outputs bash commands based on user instructions.",
+            "Analyze the user's request and output ONLY the bash command(s) needed to accomplish the task.",
+            "Respond with ONLY the command, no explanation or markdown formatting.",
+        )
+    )
+    markdown: bool = False
 
 
 @dataclass

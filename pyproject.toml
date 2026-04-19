@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ash-cli"
 version = "0.1.0"
-description = "Local AI agent using Agno and llama.cpp"
+description = "CLI AI agent that outputs bash commands"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

@@ -16,10 +16,49 @@ from .buffer import ScrollBuffer
 from .config import Config
 
 
+def get_user_input(console: Console, is_tty: bool) -> str:
+    old_settings = None
+    if is_tty:
+        old_settings = termios.tcgetattr(sys.stdin)
+        tty.setcbreak(sys.stdin.fileno())
+
+    try:
+        console.print("[green]>[/green] ", end="")
+        sys.stdout.flush()
+        if is_tty:
+            user_input = ""
+            while True:
+                ch = sys.stdin.read(1)
+                if ch == "\n" or ch == "\r":
+                    console.print()
+                    break
+                elif ch == "\x7f" or ord(ch) == 127:
+                    if user_input:
+                        user_input = user_input[:-1]
+                        sys.stdout.write("\b \b")
+                        sys.stdout.flush()
+                elif ord(ch) < 32:
+                    pass
+                else:
+                    user_input += ch
+                    sys.stdout.write(ch)
+                    sys.stdout.flush()
+            return user_input.strip()
+        else:
+            return input().strip()
+    except EOFError:
+        return ""
+    finally:
+        if old_settings:
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+
+
 def run(config: Config) -> None:
     console = Console()
     tui_config = config.tui
-    prompt = config.default_prompt
+
+    is_tty = sys.stdin.isatty()
+    prompt = get_user_input(console, is_tty)
 
     console.print(
         Panel(
@@ -30,9 +69,7 @@ def run(config: Config) -> None:
         )
     )
 
-    is_tty = sys.stdin.isatty()
     old_settings = None
-
     if is_tty:
         old_settings = termios.tcgetattr(sys.stdin)
         tty.setcbreak(sys.stdin.fileno())
@@ -149,6 +186,14 @@ def run(config: Config) -> None:
                         )
                     )
 
+        console.print(
+            Panel(
+                Text(thinking_buffer.show() or "(thinking hidden)"),
+                title=tui_config.thinking_panel_title,
+                border_style="blue",
+                box=box.ROUNDED,
+            )
+        )
         console.print(
             Panel(
                 Text(response[0] or "(done)"),

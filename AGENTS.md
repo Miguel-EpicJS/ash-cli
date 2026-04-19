@@ -11,7 +11,7 @@ Requires **llama.cpp server running** at `http://localhost:8080/v1` with Qwen3.5
 ## Run
 
 ```bash
-uv run ash-cli   # default prompt
+uv run ash-cli   # prompts for instructions, outputs bash command
 ```
 
 ## Lint & Typecheck
