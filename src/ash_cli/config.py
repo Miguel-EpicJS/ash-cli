@@ -39,6 +39,8 @@ class Args:
     max_tokens: int | None = None
     url: str | None = None
     debug: bool = False
+    reset: bool = False
+    color: bool | None = None
 
 
 @dataclass
@@ -72,6 +74,7 @@ class TUIConfig:
     input_panel_title: str = "Input"
     thinking_panel_title: str = "Thinking"
     response_panel_title: str = "Response"
+    color: bool = True
 
 
 @dataclass
@@ -94,6 +97,26 @@ def _get_default_config_dir() -> Path:
 
 def _get_default_config_path() -> Path:
     return _get_default_config_dir() / "config"
+
+
+def _get_env_path() -> Path:
+    root = _find_project_root()
+    return root / ".env"
+
+
+def reset_config() -> list[Path]:
+    removed: list[Path] = []
+    config_dir = _get_default_config_dir()
+    for ext in (".json", ".yaml", ".yml"):
+        config_path = config_dir / f"config{ext}"
+        if config_path.exists():
+            config_path.unlink()
+            removed.append(config_path)
+    env_path = _get_env_path()
+    if env_path.exists():
+        env_path.unlink()
+        removed.append(env_path)
+    return removed
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -150,6 +173,8 @@ def _apply_args(config: Config, args: Args) -> Config:
         config.model.base_url = args.url
     if args.debug:
         config.tui.refresh_rate = 1
+    if args.color is not None:
+        config.tui.color = args.color
     return config
 
 
@@ -170,6 +195,10 @@ def _apply_env(config: Config) -> Config:
         config.logging.file = Path(log_file)
     if log_format := os.environ.get("ASH_LOG_FORMAT"):
         config.logging.format = log_format  # type: ignore[assignment]
+    if no_color := os.environ.get("ASH_NO_COLOR"):
+        config.tui.color = not bool(no_color)
+    elif color := os.environ.get("ASH_COLOR"):
+        config.tui.color = bool(color)
     return config
 
 

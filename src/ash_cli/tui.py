@@ -83,6 +83,7 @@ def _run_fallback(prompt: str) -> str:
 def run(config: Config) -> None:
     console = Console()
     tui_config = config.tui
+    use_color = tui_config.color
     session_id = os.urandom(16).hex()
 
     old_settings = None
@@ -247,7 +248,10 @@ def run(config: Config) -> None:
                                 capture_output=True,
                             )
                             if check.returncode != 0:
-                                console.print(f"[red]Error: '{cmd}' not found[/red]")
+                                err_msg = f"Error: '{cmd}' not found"
+                                console.print(
+                                    f"[red]{err_msg}[/red]" if use_color else err_msg
+                                )
                             else:
                                 proc = subprocess.Popen(
                                     response[0].strip(),
@@ -256,10 +260,19 @@ def run(config: Config) -> None:
                                     shell=True,
                                 )
                                 stdout, stderr = proc.communicate()
+                                returncode = proc.returncode
                                 if stdout:
-                                    console.print(f"[cyan]{stdout.decode()}[/cyan]")
+                                    out_text = stdout.decode()
+                                    color = "[green]" if returncode == 0 else "[red]"
+                                    out_str = (
+                                        f"{color}{out_text}[/{color[1:-1]}]"
+                                        if use_color
+                                        else out_text
+                                    )
+                                    console.print(out_str)
                                 if stderr:
-                                    console.print(f"[red]{stderr.decode()}[/red]")
+                                    err_text = stderr.decode()
+                                    console.print(f"[red]{err_text}[/red]")
                     elif key == "c":
                         try:
                             pyperclip.copy(response[0].strip())

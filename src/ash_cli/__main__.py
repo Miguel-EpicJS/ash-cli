@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from .config import Args, get_config
+from .config import Args, get_config, reset_config
 from .error import (
     ValidationError,
     validate_arg_range,
@@ -39,6 +39,9 @@ def _parse_args() -> Args:
     parser.add_argument("--url", type=str, help="Model API base URL")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument(
+        "--reset", action="store_true", help="Reset configuration to defaults"
+    )
+    parser.add_argument(
         "--version", action="version", version=f"%(prog)s {_get_version()}"
     )
     ns = parser.parse_args()
@@ -48,11 +51,23 @@ def _parse_args() -> Args:
         max_tokens=ns.max_tokens,
         url=ns.url,
         debug=ns.debug,
+        reset=ns.reset,
     )
 
 
 def main() -> None:
     args = _parse_args()
+    if args.reset:
+        response = input("Are you sure you want to reset config? [y/N]: ")
+        if response.lower() == "y":
+            removed = reset_config()
+            if removed:
+                print(f"Removed: {', '.join(str(p) for p in removed)}")
+            else:
+                print("No config files found to remove.")
+        else:
+            print("Reset cancelled.")
+        return
     try:
         _validate_args(args)
     except ValidationError as e:
