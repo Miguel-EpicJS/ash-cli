@@ -7,7 +7,7 @@ agent = Agent(
         api_key="not-needed",
         base_url="http://localhost:8080/v1",
         temperature=0.3,
-        max_tokens=300,
+        max_tokens=2048,
     ),
     description="You are a helpful AI assistant.",
     instructions=[
