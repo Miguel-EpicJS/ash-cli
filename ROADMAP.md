@@ -69,11 +69,11 @@ flowchart TD
     tracing --> debug
     testing --> pypi
 
-    style Core fill:#cce5ff,stroke:#007bff
-    style Sessions fill:#e2e3e5,stroke:#6c757d
-    style Features fill:#d4edda,stroke:#28a745
-    style Observability fill:#cce5ff,stroke:#007bff
-    style Distribution fill:#e2e3e5,stroke:#6c757d
+    style Core fill:#1a365d,stroke:#63b3ed,color:#fff
+    style Sessions fill:#2d3748,stroke:#a0aec0,color:#fff
+    style Features fill:#22543d,stroke:#68d391,color:#fff
+    style Observability fill:#1a365d,stroke:#63b3ed,color:#fff
+    style Distribution fill:#2d3748,stroke:#a0aec0,color:#fff
 ```
 
 ---
@@ -94,9 +94,9 @@ flowchart LR
     C1 --> C2[Retry logic]
     C2 --> C3[Graceful degradation]
     
-    style A0 fill:#cce5ff,stroke:#007bff
-    style B0 fill:#cce5ff,stroke:#007bff
-    style C0 fill:#cce5ff,stroke:#007bff
+    style A0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style B0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style C0 fill:#1a365d,stroke:#63b3ed,color:#fff
 ```
 
 ### Config System [M]
@@ -133,8 +133,8 @@ flowchart LR
     B1 --> B2[Integration Tests]
     B2 --> B3[CI/CD]
     
-    style A0 fill:#e2e3e5,stroke:#6c757d
-    style B0 fill:#e2e3e5,stroke:#6c757d
+    style A0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style B0 fill:#2d3748,stroke:#a0aec0,color:#fff
 ```
 
 ### Session Storage [M]
@@ -168,10 +168,10 @@ flowchart LR
     D0["Output Options [S]"] --> D1[Multiple modes]
     D1 --> D2[JSON output]
     
-    style A0 fill:#e2e3e5,stroke:#6c757d
-    style B0 fill:#e2e3e5,stroke:#6c757d
-    style C0 fill:#e2e3e5,stroke:#6c757d
-    style D0 fill:#e2e3e5,stroke:#6c757d
+    style A0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style B0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style C0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style D0 fill:#2d3748,stroke:#a0aec0,color:#fff
 ```
 
 ### Multi-Model [M]
@@ -215,9 +215,9 @@ flowchart LR
     C0["Debug Mode [S]"] --> C1[Verbose output]
     C1 --> C2[Payload dump]
     
-    style A0 fill:#cce5ff,stroke:#007bff
-    style B0 fill:#cce5ff,stroke:#007bff
-    style C0 fill:#cce5ff,stroke:#007bff
+    style A0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style B0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style C0 fill:#1a365d,stroke:#63b3ed,color:#fff
 ```
 
 ### Tracing [M]
@@ -254,8 +254,8 @@ flowchart LR
     B1 --> B2[zsh]
     B2 --> B3[fish]
     
-    style A0 fill:#e2e3e5,stroke:#6c757d
-    style B0 fill:#e2e3e5,stroke:#6c757d
+    style A0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style B0 fill:#2d3748,stroke:#a0aec0,color:#fff
 ```
 
 ### PyPI Package [M]
@@ -280,7 +280,7 @@ flowchart LR
     B --> C["Colored output"]
     C --> D["Config reset"]
     
-    style A fill:#cce5ff,stroke:#007bff
+    style A fill:#1a365d,stroke:#63b3ed,color:#fff
 ```
 
 - [ ] Add `--version` flag [S]
