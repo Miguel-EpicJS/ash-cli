@@ -15,7 +15,6 @@ agent = Agent(
         "Think briefly and give your final answer only.",
     ],
     markdown=True,
-    show_tool_calls=False,
 )
 
 if __name__ == "__main__":
