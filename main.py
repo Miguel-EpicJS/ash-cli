@@ -11,11 +11,10 @@ agent = Agent(
     ),
     description="You are a helpful AI assistant.",
     instructions=[
-        "Respond concisely and helpfully to user queries.",
-        "Do not show your thinking process - just give the final answer.",
+        "Respond concisely - keep answers short and direct.",
+        "Think briefly and give your final answer only.",
     ],
     markdown=True,
-    thinking={},  # Disable thinking to speed up responses
     show_tool_calls=False,
 )
 
