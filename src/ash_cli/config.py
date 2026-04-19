@@ -41,6 +41,11 @@ class Args:
     debug: bool = False
     reset: bool = False
     color: bool | None = None
+    session: str | None = None
+    list_sessions: bool = False
+    export_session: str | None = None
+    import_session: str | None = None
+    rename_session: str | None = None
 
 
 @dataclass

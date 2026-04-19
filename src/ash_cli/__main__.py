@@ -1,5 +1,6 @@
 import argparse
 import sys
+from pathlib import Path
 
 from .config import Args, get_config, reset_config
 from .error import (
@@ -8,6 +9,13 @@ from .error import (
     validate_non_empty,
     validate_positive,
     validate_url,
+)
+from .session import (
+    export_session,
+    import_session,
+    list_sessions,
+    load_session,
+    rename_session,
 )
 from .tui import run
 
@@ -41,6 +49,22 @@ def _parse_args() -> Args:
     parser.add_argument(
         "--reset", action="store_true", help="Reset configuration to defaults"
     )
+    parser.add_argument("--session", type=str, help="Session ID to load")
+    parser.add_argument(
+        "--sessions",
+        action="store_true",
+        dest="list_sessions",
+        help="List all sessions",
+    )
+    parser.add_argument(
+        "--export", type=str, dest="export_session", help="Export session to file"
+    )
+    parser.add_argument(
+        "--import", type=str, dest="import_session", help="Import session from file"
+    )
+    parser.add_argument(
+        "--rename", type=str, dest="rename_session", help="Rename session (session_id)"
+    )
     parser.add_argument(
         "--version", action="version", version=f"%(prog)s {_get_version()}"
     )
@@ -52,7 +76,54 @@ def _parse_args() -> Args:
         url=ns.url,
         debug=ns.debug,
         reset=ns.reset,
+        session=ns.session,
+        list_sessions=ns.list_sessions,
+        export_session=ns.export_session,
+        import_session=ns.import_session,
+        rename_session=ns.rename_session,
     )
+
+
+def _handle_session_args(args: Args) -> bool:
+    if args.list_sessions:
+        sessions = list_sessions()
+        if not sessions:
+            print("No sessions found.")
+            return True
+        for s in sessions:
+            print(f"{s.id} | {s.name} | {s.created_at[:10]}")
+        return True
+    if args.export_session:
+        parts = args.export_session.split(":", 1)
+        if len(parts) != 2:
+            print("Error: Use --export session_id:path/to/file.json")
+            return True
+        session_id, file_path = parts
+        if export_session(session_id, Path(file_path)):
+            print(f"Exported session {session_id} to {file_path}")
+        else:
+            print(f"Session {session_id} not found.")
+        return True
+    if args.import_session:
+        path = Path(args.import_session)
+        if import_session(path):
+            print(f"Imported session from {path}")
+        else:
+            print(f"Failed to import from {path}")
+        return True
+    if args.rename_session:
+        parts = args.rename_session.split(":", 1)
+        if len(parts) != 2:
+            print("Error: Use --rename session_id:new_name")
+            return True
+        session_id, new_name = parts
+        session = rename_session(session_id, new_name)
+        if session:
+            print(f"Renamed session to {new_name}")
+        else:
+            print(f"Session {session_id} not found.")
+        return True
+    return False
 
 
 def main() -> None:
@@ -68,13 +139,23 @@ def main() -> None:
         else:
             print("Reset cancelled.")
         return
+    if _handle_session_args(args):
+        return
     try:
         _validate_args(args)
     except ValidationError as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
     config = get_config(args=args)
-    run(config)
+    session = None
+    if args.session:
+        session = load_session(args.session)
+        if session:
+            print(f"Loaded session: {session.name}")
+        else:
+            print(f"Session {args.session} not found.")
+            sys.exit(1)
+    run(config, session=session)
 
 
 if __name__ == "__main__":

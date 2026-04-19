@@ -1,4 +1,3 @@
-import os
 import queue
 import re
 import select
@@ -9,6 +8,7 @@ import termios
 import threading
 import time as time_module
 import tty
+from pathlib import Path
 
 import pyperclip
 from rich import box
@@ -21,6 +21,19 @@ from .agent import create_agent
 from .buffer import ScrollBuffer
 from .config import Config
 from .error import ConnectionError, RetryConfig, TimeoutError
+from .session import (
+    Message,
+    Session,
+    export_session,
+    import_session,
+    list_sessions,
+    load_session,
+    rename_session,
+    save_session,
+)
+from .session import (
+    create_session as create_sess,
+)
 
 
 def get_user_input(console: Console, is_tty: bool, is_multi: bool = False) -> str:
@@ -80,11 +93,22 @@ def _run_fallback(prompt: str) -> str:
     return "echo 'API unavailable - please try again later'"
 
 
-def run(config: Config) -> None:
+def run(config: Config, session: Session | None = None) -> None:
     console = Console()
     tui_config = config.tui
     use_color = tui_config.color
-    session_id = os.urandom(16).hex()
+
+    if session:
+        current_session = session
+    else:
+        current_session = create_sess(
+            name="default",
+            model=config.model.id,
+            temperature=config.model.temperature,
+            max_tokens=config.model.max_tokens,
+            base_url=config.model.base_url,
+        )
+    session_id = current_session.id
 
     old_settings = None
     is_tty = sys.stdin.isatty()
@@ -106,6 +130,77 @@ def run(config: Config) -> None:
                     console.print(
                         "[dim]Commands: /quit, /q - exit | /help - show this[/dim]"
                     )
+                    continue
+                elif cmd == "/sessions":
+                    sessions = list_sessions()
+                    if not sessions:
+                        console.print("[dim]No sessions found.[/dim]")
+                    else:
+                        for s in sessions:
+                            console.print(f"{s.id} | {s.name} | {s.created_at[:10]}")
+                    continue
+                elif cmd == "/load":
+                    parts = prompt.split()
+                    if len(parts) < 2:
+                        console.print("[dim]Usage: /load <session_id>[/dim]")
+                    else:
+                        loaded = load_session(parts[1])
+                        if loaded:
+                            current_session = loaded
+                            session_id = current_session.id
+                            console.print(
+                                f"[green]Loaded session: {current_session.name}[/green]"
+                            )
+                        else:
+                            console.print(f"[red]Session not found: {parts[1]}[/red]")
+                    continue
+                elif cmd == "/export":
+                    parts = prompt.split()
+                    if len(parts) < 2:
+                        console.print("[dim]Usage: /export <session_id> [/dim]")
+                    else:
+                        sess_id = parts[1]
+                        file_path = (
+                            Path(parts[2])
+                            if len(parts) > 2
+                            else Path.home() / f"{sess_id}.json"
+                        )
+                        if export_session(sess_id, file_path):
+                            console.print(f"[green]Exported to {file_path}[/green]")
+                        else:
+                            console.print(f"[red]Session not found: {sess_id}[/red]")
+                    continue
+                elif cmd == "/import":
+                    parts = prompt.split()
+                    if len(parts) < 2:
+                        console.print("[dim]Usage: /import [/dim]")
+                    else:
+                        imported = import_session(Path(parts[1]))
+                        if imported:
+                            current_session = imported
+                            session_id = current_session.id
+                            console.print(
+                                f"[green]Imported: {current_session.name}[/green]"
+                            )
+                        else:
+                            console.print(f"[red]Import failed: {parts[1]}[/red]")
+                    continue
+                elif cmd == "/rename":
+                    parts = prompt.split()
+                    if len(parts) < 3:
+                        console.print(
+                            "[dim]Usage: /rename <session_id> <new_name>[/dim]"
+                        )
+                    else:
+                        sess_id = parts[1]
+                        new_name = " ".join(parts[2:])
+                        renamed = rename_session(sess_id, new_name)
+                        if renamed:
+                            if current_session.id == sess_id:
+                                current_session = renamed
+                            console.print(f"[green]Renamed to: {new_name}[/green]")
+                        else:
+                            console.print(f"[red]Session not found: {sess_id}[/red]")
                     continue
 
             console.print(
@@ -282,6 +377,14 @@ def run(config: Config) -> None:
                 else:
                     console.print()
 
+            if response[0].strip():
+                current_session.messages.append(Message(role="user", content=prompt))
+                current_session.messages.append(
+                    Message(role="assistant", content=response[0].strip())
+                )
+                save_session(current_session)
+
     finally:
+        save_session(current_session)
         if old_settings:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
