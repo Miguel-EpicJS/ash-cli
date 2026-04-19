@@ -4,7 +4,11 @@ from agno.models.openai.like import OpenAILike
 from .config import AgentConfig, ModelConfig
 
 
-def create_agent(model_config: ModelConfig, agent_config: AgentConfig) -> Agent:
+def create_agent(
+    model_config: ModelConfig,
+    agent_config: AgentConfig,
+    session_id: str | None = None,
+) -> Agent:
     return Agent(
         model=OpenAILike(
             id=model_config.id,
@@ -16,4 +20,5 @@ def create_agent(model_config: ModelConfig, agent_config: AgentConfig) -> Agent:
         description=agent_config.description,
         instructions=list(agent_config.instructions),
         markdown=agent_config.markdown,
+        session_id=session_id,
     )
