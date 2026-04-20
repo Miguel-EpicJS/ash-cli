@@ -22,9 +22,6 @@ from .session import (
 from .tui import run
 
 
-
-
-
 def _validate_args(args: Args) -> None:
     if args.model is not None:
         validate_non_empty(args.model, "--model")

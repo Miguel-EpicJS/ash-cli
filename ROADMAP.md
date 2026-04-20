@@ -149,7 +149,7 @@ flowchart LR
 - [x] Add pytest
 - [x] Unit tests (config, agent, buffer, session, error, tui)
 - [ ] Integration tests
-- [ ] GitHub Actions CI
+- [x] GitHub Actions CI
 
 ---
 

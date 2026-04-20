@@ -19,12 +19,6 @@ dependencies = [
     "readchar>=4.0.0",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0.0",
-    "pytest-mock>=3.14.0",
-]
-
 [project.scripts]
 ash-cli = "ash_cli.__main__:main"
 
@@ -48,3 +42,13 @@ strict = true
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "mypy>=1.20.1",
+    "pytest>=8.0.0",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.15.11",
+    "types-pyperclip>=1.11.0.20260408",
+    "types-pyyaml>=6.0.12.20260408",
+]

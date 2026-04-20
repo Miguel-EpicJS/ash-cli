@@ -26,6 +26,7 @@ from .logging import init_logging
 from .session import (
     Message,
     Session,
+    Usage,
     export_session,
     get_command_history,
     get_total_usage,
@@ -34,7 +35,6 @@ from .session import (
     load_session,
     rename_session,
     save_session,
-    Usage,
 )
 from .session import (
     create_session as create_sess,
@@ -133,7 +133,6 @@ def get_user_input(
         if is_tty:
             user_input = ""
             line_num = 0
-            completion_idx = 0
             search_mode = False
             search_query = ""
             search_results: list[str] = []
@@ -477,7 +476,7 @@ def run(config: Config, session: Session | None = None) -> None:
                     except Exception as e:
                         thinking_queue.put(f"Error: {e}")
                         break
-                
+
                 latency = time_module.time() - start_time
                 current_session.usage.total_latency += latency
                 current_session.usage.api_call_count += 1
@@ -574,7 +573,7 @@ def run(config: Config, session: Session | None = None) -> None:
 
                 if use_fallback[0] and not response[0].strip():
                     response[0] = _run_fallback(prompt)
-                
+
                 response[0] = _clean_command(response[0])
 
             console.print(f"[green]Command:[/green] {response[0] or '(none)'}")

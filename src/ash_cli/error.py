@@ -69,7 +69,7 @@ def with_retry[T](
             else:
                 raise
 
-    raise last_exception from None
+    raise last_exception if last_exception is not None else ASHError("Max retries reached")
 
 
 def validate_arg_range(
