@@ -18,12 +18,27 @@ class Message:
 
 
 @dataclass
+class Usage:
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+    total_latency: float = 0.0
+
+    def add(self, other: Usage) -> None:
+        self.prompt_tokens += other.prompt_tokens
+        self.completion_tokens += other.completion_tokens
+        self.total_tokens += other.total_tokens
+        self.total_latency += other.total_latency
+
+
+@dataclass
 class Session:
     id: str
     name: str
     created_at: str
     updated_at: str
     messages: list[Message] = field(default_factory=list)
+    usage: Usage = field(default_factory=Usage)
     model: str = "qwen3.5:4b"
     temperature: float = 0.6
     max_tokens: int = 4096
@@ -39,6 +54,12 @@ class Session:
                 {"role": m.role, "content": m.content, "timestamp": m.timestamp}
                 for m in self.messages
             ],
+            "usage": {
+                "prompt_tokens": self.usage.prompt_tokens,
+                "completion_tokens": self.usage.completion_tokens,
+                "total_tokens": self.usage.total_tokens,
+                "total_latency": self.usage.total_latency,
+            },
             "model": self.model,
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
@@ -53,12 +74,20 @@ class Session:
             )
             for m in data.get("messages", [])
         ]
+        usage_data = data.get("usage", {})
+        usage = Usage(
+            prompt_tokens=usage_data.get("prompt_tokens", 0),
+            completion_tokens=usage_data.get("completion_tokens", 0),
+            total_tokens=usage_data.get("total_tokens", 0),
+            total_latency=usage_data.get("total_latency", 0.0),
+        )
         return cls(
             id=data["id"],
             name=data["name"],
             created_at=data["created_at"],
             updated_at=data["updated_at"],
             messages=messages,
+            usage=usage,
             model=data.get("model", "qwen3.5:4b"),
             temperature=data.get("temperature", 0.6),
             max_tokens=data.get("max_tokens", 4096),
@@ -149,6 +178,19 @@ def list_sessions() -> list[Session]:
             continue
     sessions.sort(key=lambda s: s.created_at, reverse=True)
     return sessions
+
+
+def get_command_history() -> list[str]:
+    sessions = list_sessions()
+    history: list[str] = []
+    seen: set[str] = set()
+    for s in sessions:
+        for m in s.messages:
+            if m.role == "user" and m.content.strip() and m.content not in seen:
+                if not m.content.startswith("/"):
+                    history.append(m.content.strip())
+                    seen.add(m.content)
+    return history
 
 
 def export_session(session_id: str, path: Path) -> bool:

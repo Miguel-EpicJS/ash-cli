@@ -3,8 +3,8 @@
 ## Project Status
 
 - **Type**: Local AI CLI agent using Agno + Qwen3.5-4B via llama.cpp
-- **Current**: Outputs bash commands with streaming TUI, execute/copy options
-- **Files**: 6 modules (config, agent, tui, buffer, __main__, __init__)
+- **Current**: v0.3.0 - Sessions, Testing, and Basic Tools integrated
+- **Files**: 10 modules (config, agent, tui, buffer, logging, error, session, tools, __main__, __init__)
 
 ## Legend
 
@@ -69,9 +69,9 @@ flowchart TD
     tracing --> debug
     testing --> pypi
 
-    style Core fill:#1a365d,stroke:#63b3ed,color:#fff
-    style Sessions fill:#2d3748,stroke:#a0aec0,color:#fff
-    style Features fill:#22543d,stroke:#68d391,color:#fff
+    style Core fill:#22543d,stroke:#68d391,color:#fff
+    style Sessions fill:#22543d,stroke:#68d391,color:#fff
+    style Features fill:#2d3748,stroke:#a0aec0,color:#fff
     style Observability fill:#1a365d,stroke:#63b3ed,color:#fff
     style Distribution fill:#2d3748,stroke:#a0aec0,color:#fff
 ```
@@ -94,30 +94,30 @@ flowchart LR
     C1 --> C2[Retry logic]
     C2 --> C3[Graceful degradation]
     
-    style A0 fill:#1a365d,stroke:#63b3ed,color:#fff
-    style B0 fill:#1a365d,stroke:#63b3ed,color:#fff
-    style C0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style A0 fill:#22543d,stroke:#68d391,color:#fff
+    style B0 fill:#22543d,stroke:#68d391,color:#fff
+    style C0 fill:#22543d,stroke:#68d391,color:#fff
 ```
 
 ### Config System [M]
 
-- [ ] .env file support
-- [ ] CLI arguments (`--model`, `--temp`, etc.)
-- [ ] Config file (YAML/JSON)
+- [x] .env file support
+- [x] CLI arguments (`--model`, `--temp`, etc.)
+- [x] Config file (YAML/JSON)
 
 ### Logging [S]
 
-- [ ] Log levels (debug, info, warning, error)
-- [ ] JSON structured output
-- [ ] Log file rotation with size limit
-- [ ] Configurable format
+- [x] Log levels (debug, info, warning, error)
+- [x] JSON structured output
+- [x] Log file rotation with size limit
+- [x] Configurable format
 
 ### Error Handling [M]
 
-- [ ] Connection error handling
-- [ ] Retry logic with backoff
-- [ ] Graceful degradation
-- [ ] Input validation
+- [x] Connection error handling
+- [x] Retry logic with backoff
+- [x] Graceful degradation
+- [x] Input validation
 
 ---
 
@@ -133,21 +133,21 @@ flowchart LR
     B1 --> B2[Integration Tests]
     B2 --> B3[CI/CD]
     
-    style A0 fill:#2d3748,stroke:#a0aec0,color:#fff
-    style B0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style A0 fill:#22543d,stroke:#68d391,color:#fff
+    style B0 fill:#22543d,stroke:#68d391,color:#fff
 ```
 
 ### Session Storage [M]
 
-- [ ] Persist to file (JSON/SQLite)
-- [ ] Load previous sessions
-- [ ] Session naming
-- [ ] Export/import
+- [x] Persist to file (JSON/SQLite)
+- [x] Load previous sessions
+- [x] Session naming
+- [x] Export/import
 
 ### Testing [L]
 
-- [ ] Add pytest
-- [ ] Unit tests (config, agent, buffer)
+- [x] Add pytest
+- [x] Unit tests (config, agent, buffer, session, error)
 - [ ] Integration tests
 - [ ] GitHub Actions CI
 
@@ -168,34 +168,35 @@ flowchart LR
     D0["Output Options [S]"] --> D1[Multiple modes]
     D1 --> D2[JSON output]
     
-    style A0 fill:#2d3748,stroke:#a0aec0,color:#fff
-    style B0 fill:#2d3748,stroke:#a0aec0,color:#fff
-    style C0 fill:#2d3748,stroke:#a0aec0,color:#fff
-    style D0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style A0 fill:#22543d,stroke:#68d391,color:#fff
+    style B0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style C0 fill:#22543d,stroke:#68d391,color:#fff
+    style D0 fill:#22543d,stroke:#68d391,color:#fff
 ```
 
 ### Multi-Model [M]
 
-- [ ] Multiple model support
-- [ ] Model switching
-- [ ] Model presets
+- [x] Multiple model support
+- [x] Model switching
+- [x] Model presets (in config)
 
 ### Enhanced TUI [L]
 
-- [ ] Keyboard shortcuts (vim bindings)
-- [ ] Command completions
-- [ ] Better scroll
-- [ ] Themes
+- [x] Keyboard shortcuts (vim bindings for scroll: j, k)
+- [x] History search (with /)
+- [x] Command completions (Tab)
+- [ ] Better scroll (smooth scroll/page up-down)
+- [x] Themes (dark/light/system)
 
 ### Tools Integration [M]
 
-- [ ] Git operations
-- [ ] File previews
-- [ ] Custom tools registration
+- [x] Git operations (status, diff, commit, push, log)
+- [x] File previews
+- [x] Custom tools registration
 
 ### Output Options [S]
 
-- [ ] Multiple output modes
+- [x] Execute/Copy/Skip interactive prompt
 - [ ] JSON output mode
 - [ ] Pipe to other commands
 
@@ -222,16 +223,16 @@ flowchart LR
 
 ### Tracing [M]
 
-- [ ] Request/response tracing
-- [ ] Token usage tracking
-- [ ] Latency metrics
+- [ ] Request/reponse tracing
+- [x] Token usage tracking
+- [x] Latency metrics
 - [ ] Session telemetry
 
 ### Metrics [S]
 
-- [ ] Total tokens used
+- [x] Total tokens used (per session)
 - [ ] API call counts
-- [ ] Average response time
+- [x] Average response time (partially, total latency stored)
 - [ ] Session statistics
 
 ### Debug Mode [S]
@@ -280,13 +281,13 @@ flowchart LR
     B --> C["Colored output"]
     C --> D["Config reset"]
     
-    style A fill:#1a365d,stroke:#63b3ed,color:#fff
+    style A fill:#22543d,stroke:#68d391,color:#fff
 ```
 
-- [ ] Add `--version` flag [S]
-- [ ] Extended `--help` [S]
-- [ ] Colored command output [S]
-- [ ] Config reset command [S]
+- [x] Add `--version` flag [S]
+- [x] Extended `--help` [S]
+- [x] Colored command output [S]
+- [x] Config reset command [S]
 
 ---
 
@@ -298,15 +299,13 @@ gantt
     dateFormat  YYYY-MM-DD
     
     section v0.2.0
-    Core Config System       :active, 2025-04-01, 7d
-    Logging                 :2025-04-05, 5d
-    Error Handling          :2025-04-08, 7d
+    Core Infrastructure    :done, 2025-04-01, 14d
     
     section v0.3.0
-    Session Storage         :2025-04-15, 7d
-    Testing                 :2025-04-20, 8d
+    Sessions & Testing     :done, 2025-04-15, 10d
+    Basic Features         :active, 2025-04-25, 10d
     
     section v1.0.0
-    All Features            :2025-05-01, 15d
-    PyPI Release            :2025-05-14, 7d
+    All Features            :2025-05-10, 15d
+    PyPI Release            :2025-05-25, 7d
 ```
