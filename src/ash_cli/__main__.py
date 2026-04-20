@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .config import Args, get_config, reset_config
+from .config import Args, get_available_models, get_config, reset_config
 from .error import (
     ValidationError,
     validate_arg_range,
@@ -57,6 +57,11 @@ def _parse_args() -> Args:
         help="List all sessions",
     )
     parser.add_argument(
+        "--list-models",
+        action="store_true",
+        help="List available models",
+    )
+    parser.add_argument(
         "--export", type=str, dest="export_session", help="Export session to file"
     )
     parser.add_argument(
@@ -78,6 +83,7 @@ def _parse_args() -> Args:
         reset=ns.reset,
         session=ns.session,
         list_sessions=ns.list_sessions,
+        list_models=ns.list_models,
         export_session=ns.export_session,
         import_session=ns.import_session,
         rename_session=ns.rename_session,
@@ -128,6 +134,12 @@ def _handle_session_args(args: Args) -> bool:
 
 def main() -> None:
     args = _parse_args()
+    if args.list_models:
+        models = get_available_models()
+        for model_id, preset in models.items():
+            base_url = preset.get("base_url", "N/A")
+            print(f"{model_id} | {base_url}")
+        return
     if args.reset:
         response = input("Are you sure you want to reset config? [y/N]: ")
         if response.lower() == "y":

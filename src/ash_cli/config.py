@@ -12,6 +12,21 @@ from dotenv import load_dotenv
 
 from ash_cli.logging import Level, LoggingConfig
 
+DEFAULT_MODELS: dict[str, dict[str, Any]] = {
+    "qwen3.5:4b": {
+        "id": "qwen3.5:4b",
+        "base_url": "http://localhost:8080/v1",
+    },
+    "qwen3.5:8b": {
+        "id": "qwen3.5:8b",
+        "base_url": "http://localhost:8080/v1",
+    },
+    "llama3": {
+        "id": "llama3",
+        "base_url": "http://localhost:8080/v1",
+    },
+}
+
 
 def _find_project_root() -> Path:
     current = Path(__file__).resolve().parent
@@ -43,6 +58,7 @@ class Args:
     color: bool | None = None
     session: str | None = None
     list_sessions: bool = False
+    list_models: bool = False
     export_session: str | None = None
     import_session: str | None = None
     rename_session: str | None = None
@@ -89,6 +105,7 @@ class Config:
     agent: AgentConfig = field(default_factory=AgentConfig)
     tui: TUIConfig = field(default_factory=TUIConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
+    model_presets: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 def _get_default_config_dir() -> Path:
@@ -205,7 +222,33 @@ def _apply_env(config: Config) -> Config:
         config.tui.color = not bool(no_color)
     elif color := os.environ.get("ASH_COLOR"):
         config.tui.color = bool(color)
+    if models_env := os.environ.get("ASH_MODELS"):
+        try:
+            config.model_presets = json.loads(models_env)
+        except json.JSONDecodeError:
+            pass
     return config
+
+
+def get_available_models(config: Config | None = None) -> dict[str, dict[str, Any]]:
+    models = DEFAULT_MODELS.copy()
+    if config and config.model_presets:
+        models.update(config.model_presets)
+    return models
+
+
+def resolve_model(model_id: str, config: Config | None = None) -> ModelConfig:
+    models = get_available_models(config)
+    if model_id in models:
+        preset = models[model_id]
+        return ModelConfig(
+            id=preset.get("id", model_id),
+            api_key=preset.get("api_key", "not-needed"),
+            base_url=preset.get("base_url", "http://localhost:8080/v1"),
+            temperature=preset.get("temperature", 0.6),
+            max_tokens=preset.get("max_tokens", 4096),
+        )
+    return ModelConfig(id=model_id)
 
 
 def get_config(path: Path | None = None, args: Args | None = None) -> Config:
