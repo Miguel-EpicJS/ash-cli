@@ -13,6 +13,7 @@ from .config import _get_default_config_dir
 @dataclass
 class Message:
     """Represents a single message in a conversation."""
+
     role: str
     content: str
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -21,6 +22,7 @@ class Message:
 @dataclass
 class Usage:
     """Tracks token usage and latency metrics."""
+
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
@@ -39,6 +41,7 @@ class Usage:
 @dataclass
 class Session:
     """Represents a persistent conversation session."""
+
     id: str
     name: str
     created_at: str
