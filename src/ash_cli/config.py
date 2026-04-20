@@ -62,6 +62,7 @@ class Args:
     export_session: str | None = None
     import_session: str | None = None
     rename_session: str | None = None
+    completions: str | None = None
 
 
 @dataclass

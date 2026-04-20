@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .completions import get_bash_completion, get_zsh_completion
 from .config import Args, get_available_models, get_config, reset_config
 from .error import (
     ValidationError,
@@ -45,7 +46,7 @@ def _parse_args() -> Args:
     )
     parser.add_argument("--max-tokens", type=int, help="Maximum tokens to generate")
     parser.add_argument("--url", type=str, help="Model API base URL")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("-v", "--debug", action="store_true", help="Enable debug mode")
     parser.add_argument(
         "--reset", action="store_true", help="Reset configuration to defaults"
     )
@@ -71,6 +72,11 @@ def _parse_args() -> Args:
         "--rename", type=str, dest="rename_session", help="Rename session (session_id)"
     )
     parser.add_argument(
+        "--completions",
+        choices=["bash", "zsh"],
+        help="Generate shell completions",
+    )
+    parser.add_argument(
         "--version", action="version", version=f"ash-cli {__version__}"
     )
     ns = parser.parse_args()
@@ -87,6 +93,7 @@ def _parse_args() -> Args:
         export_session=ns.export_session,
         import_session=ns.import_session,
         rename_session=ns.rename_session,
+        completions=ns.completions,
     )
 
 
@@ -139,6 +146,12 @@ def main() -> None:
         for model_id, preset in models.items():
             base_url = preset.get("base_url", "N/A")
             print(f"{model_id} | {base_url}")
+        return
+    if args.completions:
+        if args.completions == "bash":
+            print(get_bash_completion())
+        elif args.completions == "zsh":
+            print(get_zsh_completion())
         return
     if args.reset:
         response = input("Are you sure you want to reset config? [y/N]: ")
