@@ -2,6 +2,9 @@ from agno.agent import Agent
 from agno.models.openai.like import OpenAILike
 
 from .config import AgentConfig, ModelConfig
+from .logging import init_logging
+
+logger = init_logging()
 
 
 def create_agent(
@@ -9,6 +12,7 @@ def create_agent(
     agent_config: AgentConfig,
     session_id: str | None = None,
 ) -> Agent:
+    logger.debug(f"Creating agent with model: {model_config.id}")
     return Agent(
         model=OpenAILike(
             id=model_config.id,

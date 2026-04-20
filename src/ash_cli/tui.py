@@ -22,6 +22,7 @@ from .agent import create_agent
 from .buffer import ScrollBuffer
 from .config import Config, get_available_models, resolve_model
 from .error import ConnectionError, RetryConfig, TimeoutError
+from .logging import init_logging
 from .session import (
     Message,
     Session,
@@ -242,6 +243,7 @@ def _run_fallback(prompt: str) -> str:
 
 def run(config: Config, session: Session | None = None) -> None:
     console = Console()
+    logger = init_logging(config.logging)
     tui_config = config.tui
     use_color = tui_config.color
     theme = _get_theme(config)
@@ -318,7 +320,7 @@ def run(config: Config, session: Session | None = None) -> None:
                     console.print(
                         f"[dim]Session Usage: Prompt: {u.prompt_tokens} | "
                         f"Completion: {u.completion_tokens} | Total: {u.total_tokens} | "
-                        f"Latency: {u.total_latency:.2f}s[/dim]"
+                        f"Latency: {u.total_latency:.2f}s | API Calls: {u.api_call_count}[/dim]"
                     )
                     continue
                 elif cmd == "/sessions":
@@ -410,6 +412,7 @@ def run(config: Config, session: Session | None = None) -> None:
             use_fallback = [False]
 
             retry_config = RetryConfig(max_retries=3, base_delay=1.0)
+            logger.debug(f"User Prompt: {prompt}")
 
             def stream_agent() -> None:
                 retry_count = 0
@@ -457,6 +460,7 @@ def run(config: Config, session: Session | None = None) -> None:
                 
                 latency = time_module.time() - start_time
                 current_session.usage.total_latency += latency
+                current_session.usage.api_call_count += 1
 
             with Live(
                 Group(
@@ -554,6 +558,7 @@ def run(config: Config, session: Session | None = None) -> None:
             console.print(f"[green]Command:[/green] {response[0].strip() or '(none)'}")
 
             if response[0].strip():
+                logger.debug(f"Agent Response: {response[0].strip()}")
                 console.print("[dim][E]xecute / [C]opy / [S]kip:[/dim] ", end="")
                 sys.stdout.flush()
                 if is_tty:

@@ -23,12 +23,14 @@ class Usage:
     completion_tokens: int = 0
     total_tokens: int = 0
     total_latency: float = 0.0
+    api_call_count: int = 0
 
     def add(self, other: Usage) -> None:
         self.prompt_tokens += other.prompt_tokens
         self.completion_tokens += other.completion_tokens
         self.total_tokens += other.total_tokens
         self.total_latency += other.total_latency
+        self.api_call_count += other.api_call_count
 
 
 @dataclass
@@ -59,6 +61,7 @@ class Session:
                 "completion_tokens": self.usage.completion_tokens,
                 "total_tokens": self.usage.total_tokens,
                 "total_latency": self.usage.total_latency,
+                "api_call_count": self.usage.api_call_count,
             },
             "model": self.model,
             "temperature": self.temperature,
@@ -80,6 +83,7 @@ class Session:
             completion_tokens=usage_data.get("completion_tokens", 0),
             total_tokens=usage_data.get("total_tokens", 0),
             total_latency=usage_data.get("total_latency", 0.0),
+            api_call_count=usage_data.get("api_call_count", 0),
         )
         return cls(
             id=data["id"],

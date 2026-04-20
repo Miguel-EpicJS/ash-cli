@@ -196,6 +196,8 @@ def _apply_args(config: Config, args: Args) -> Config:
         config.model.base_url = args.url
     if args.debug:
         config.tui.refresh_rate = 1
+        config.model.debug = True
+        config.logging.level = Level.DEBUG
     if args.color is not None:
         config.tui.color = args.color
     return config
