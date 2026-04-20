@@ -239,7 +239,7 @@ class TestAgentConfig:
     def test_default_values(self) -> None:
         config = AgentConfig()
         assert config.description == "CLI assistant that outputs bash commands"
-        assert len(config.instructions) == 4
+        assert len(config.instructions) == 5
 
 
 class TestTUIConfig:

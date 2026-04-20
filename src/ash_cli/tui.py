@@ -242,6 +242,16 @@ def _run_fallback(prompt: str) -> str:
     return "echo 'API unavailable - please try again later'"
 
 
+def _clean_command(text: str) -> str:
+    text = text.strip()
+    match = re.search(r"```(?:[a-zA-Z]*\n)?(.*?)```", text, re.DOTALL)
+    if match:
+        text = match.group(1).strip()
+    if text.startswith("`") and text.endswith("`"):
+        text = text[1:-1].strip()
+    return text
+
+
 def run(config: Config, session: Session | None = None) -> None:
     console = Console()
     logger = init_logging(config.logging)
@@ -564,8 +574,10 @@ def run(config: Config, session: Session | None = None) -> None:
 
                 if use_fallback[0] and not response[0].strip():
                     response[0] = _run_fallback(prompt)
+                
+                response[0] = _clean_command(response[0])
 
-            console.print(f"[green]Command:[/green] {response[0].strip() or '(none)'}")
+            console.print(f"[green]Command:[/green] {response[0] or '(none)'}")
 
             if response[0].strip():
                 logger.debug(f"Agent Response: {response[0].strip()}")
