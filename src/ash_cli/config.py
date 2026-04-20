@@ -80,10 +80,11 @@ class AgentConfig:
     description: str = "CLI assistant that outputs bash commands"
     instructions: tuple[str, ...] = field(
         default_factory=lambda: (
-            "You are a CLI assistant that outputs bash commands based on user instructions.",
-            "Analyze the user's request and output ONLY the bash command(s) needed to accomplish the task.",
-            "Respond with ONLY the command, no explanation or markdown formatting.",
-            "Do not use markdown code format, output only plain text",
+            "You are a CLI assistant that outputs bash commands.",
+            "Output ONLY the bash command(s) needed for the task.",
+            "STRICT: No markdown formatting. No backticks (```). No code blocks.",
+            "STRICT: No explanations, no talk, no 'Here is the command'.",
+            "Output the raw text of the command only.",
         )
     )
     markdown: bool = False
@@ -98,6 +99,7 @@ class TUIConfig:
     thinking_panel_title: str = "Thinking"
     response_panel_title: str = "Response"
     color: bool = True
+    theme: str = "system"
 
 
 @dataclass

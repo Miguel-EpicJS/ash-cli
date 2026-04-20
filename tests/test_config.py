@@ -122,9 +122,10 @@ class TestApplyConfig:
 
     def test_applies_tui_config(self) -> None:
         config = Config()
-        data: dict[str, Any] = {"tui": {"color": False}}
+        data: dict[str, Any] = {"tui": {"color": False, "theme": "dark"}}
         result = _apply_config(config, data)
         assert result.tui.color is False
+        assert result.tui.theme == "dark"
 
     def test_ignores_unknown_fields(self) -> None:
         config = Config()
@@ -246,3 +247,4 @@ class TestTUIConfig:
         config = TUIConfig()
         assert config.panel_height == 8
         assert config.color is True
+        assert config.theme == "system"
