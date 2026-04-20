@@ -270,7 +270,6 @@ flowchart LR
 - [x] Bash completion
 - [x] Zsh completion
 - [ ] Fish completion
-pletion
 
 ---
 
