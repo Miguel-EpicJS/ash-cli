@@ -12,6 +12,17 @@ def create_agent(
     agent_config: AgentConfig,
     session_id: str | None = None,
 ) -> Agent:
+    """
+    Creates and configures an Agno Agent instance.
+
+    Args:
+        model_config: Configuration for the LLM model.
+        agent_config: Configuration for the agent's persona and instructions.
+        session_id: Optional ID to associate the agent with a persistent session.
+
+    Returns:
+        A configured Agno Agent instance.
+    """
     logger.debug(f"Creating agent with model: {model_config.id}")
     return Agent(
         model=OpenAILike(

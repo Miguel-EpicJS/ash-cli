@@ -12,6 +12,7 @@ from .config import _get_default_config_dir
 
 @dataclass
 class Message:
+    """Represents a single message in a conversation."""
     role: str
     content: str
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -19,6 +20,7 @@ class Message:
 
 @dataclass
 class Usage:
+    """Tracks token usage and latency metrics."""
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
@@ -26,6 +28,7 @@ class Usage:
     api_call_count: int = 0
 
     def add(self, other: Usage) -> None:
+        """Adds another Usage instance's metrics to this one."""
         self.prompt_tokens += other.prompt_tokens
         self.completion_tokens += other.completion_tokens
         self.total_tokens += other.total_tokens
@@ -35,6 +38,7 @@ class Usage:
 
 @dataclass
 class Session:
+    """Represents a persistent conversation session."""
     id: str
     name: str
     created_at: str
@@ -47,6 +51,7 @@ class Session:
     base_url: str = "http://localhost:8080/v1"
 
     def to_dict(self) -> dict[str, Any]:
+        """Serializes the session to a dictionary."""
         return {
             "id": self.id,
             "name": self.name,
@@ -71,6 +76,7 @@ class Session:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Session:
+        """Creates a session instance from a dictionary."""
         messages = [
             Message(
                 role=m["role"], content=m["content"], timestamp=m.get("timestamp", "")
