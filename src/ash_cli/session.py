@@ -197,6 +197,14 @@ def get_command_history() -> list[str]:
     return history
 
 
+def get_total_usage() -> Usage:
+    sessions = list_sessions()
+    total = Usage()
+    for s in sessions:
+        total.add(s.usage)
+    return total
+
+
 def export_session(session_id: str, path: Path) -> bool:
     session = load_session(session_id)
     if session is None:

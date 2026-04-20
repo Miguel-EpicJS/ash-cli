@@ -2,6 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from . import __version__
 from .config import Args, get_available_models, get_config, reset_config
 from .error import (
     ValidationError,
@@ -20,8 +21,7 @@ from .session import (
 from .tui import run
 
 
-def _get_version() -> str:
-    return "0.1.0"
+
 
 
 def _validate_args(args: Args) -> None:
@@ -71,7 +71,7 @@ def _parse_args() -> Args:
         "--rename", type=str, dest="rename_session", help="Rename session (session_id)"
     )
     parser.add_argument(
-        "--version", action="version", version=f"%(prog)s {_get_version()}"
+        "--version", action="version", version=f"ash-cli {__version__}"
     )
     ns = parser.parse_args()
     return Args(

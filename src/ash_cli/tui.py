@@ -28,6 +28,7 @@ from .session import (
     Session,
     export_session,
     get_command_history,
+    get_total_usage,
     import_session,
     list_sessions,
     load_session,
@@ -281,7 +282,8 @@ def run(config: Config, session: Session | None = None) -> None:
                     console.print(
                         "[dim]Commands: /quit, /q - exit | /help - show this | "
                         "/theme dark|light|system - change theme | /models - list models | "
-                        "/model <id> - switch model | /metrics - show session usage[/dim]"
+                        "/model <id> - switch model | /metrics - show session usage | "
+                        "/stats - show total usage across all sessions[/dim]"
                     )
                     continue
                 elif cmd == "/models":
@@ -319,6 +321,14 @@ def run(config: Config, session: Session | None = None) -> None:
                     u = current_session.usage
                     console.print(
                         f"[dim]Session Usage: Prompt: {u.prompt_tokens} | "
+                        f"Completion: {u.completion_tokens} | Total: {u.total_tokens} | "
+                        f"Latency: {u.total_latency:.2f}s | API Calls: {u.api_call_count}[/dim]"
+                    )
+                    continue
+                elif cmd == "/stats":
+                    u = get_total_usage()
+                    console.print(
+                        f"[dim]Total Aggregate Usage: Prompt: {u.prompt_tokens} | "
                         f"Completion: {u.completion_tokens} | Total: {u.total_tokens} | "
                         f"Latency: {u.total_latency:.2f}s | API Calls: {u.api_call_count}[/dim]"
                     )
