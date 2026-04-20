@@ -3,8 +3,8 @@
 ## Project Status
 
 - **Type**: Local AI CLI agent using Agno + Qwen3.5-4B via llama.cpp
-- **Current**: v0.3.0 - Sessions, Testing, and Basic Tools integrated
-- **Files**: 10 modules (config, agent, tui, buffer, logging, error, session, tools, __main__, __init__)
+- **Current**: v1.0.0-rc1 - All core features, observability, and shell completions ready
+- **Files**: 11 modules
 
 ## Legend
 
@@ -71,9 +71,9 @@ flowchart TD
 
     style Core fill:#22543d,stroke:#68d391,color:#fff
     style Sessions fill:#22543d,stroke:#68d391,color:#fff
-    style Features fill:#2d3748,stroke:#a0aec0,color:#fff
-    style Observability fill:#1a365d,stroke:#63b3ed,color:#fff
-    style Distribution fill:#2d3748,stroke:#a0aec0,color:#fff
+    style Features fill:#22543d,stroke:#68d391,color:#fff
+    style Observability fill:#22543d,stroke:#68d391,color:#fff
+    style Distribution fill:#1a365d,stroke:#63b3ed,color:#fff
 ```
 
 ---
@@ -147,7 +147,7 @@ flowchart LR
 ### Testing [L]
 
 - [x] Add pytest
-- [x] Unit tests (config, agent, buffer, session, error)
+- [x] Unit tests (config, agent, buffer, session, error, tui)
 - [ ] Integration tests
 - [ ] GitHub Actions CI
 
@@ -169,7 +169,7 @@ flowchart LR
     D1 --> D2[JSON output]
     
     style A0 fill:#22543d,stroke:#68d391,color:#fff
-    style B0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style B0 fill:#22543d,stroke:#68d391,color:#fff
     style C0 fill:#22543d,stroke:#68d391,color:#fff
     style D0 fill:#22543d,stroke:#68d391,color:#fff
 ```
@@ -216,31 +216,31 @@ flowchart LR
     C0["Debug Mode [S]"] --> C1[Verbose output]
     C1 --> C2[Payload dump]
     
-    style A0 fill:#1a365d,stroke:#63b3ed,color:#fff
-    style B0 fill:#1a365d,stroke:#63b3ed,color:#fff
-    style C0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style A0 fill:#22543d,stroke:#68d391,color:#fff
+    style B0 fill:#22543d,stroke:#68d391,color:#fff
+    style C0 fill:#22543d,stroke:#68d391,color:#fff
 ```
 
 ### Tracing [M]
 
-- [ ] Request/reponse tracing
+- [x] Request/reponse tracing (Done via logger)
 - [x] Token usage tracking
 - [x] Latency metrics
-- [ ] Session telemetry
+- [x] Session telemetry (Done via /stats)
 
 ### Metrics [S]
 
 - [x] Total tokens used (per session)
-- [ ] API call counts
-- [x] Average response time (partially, total latency stored)
-- [ ] Session statistics
+- [x] API call counts
+- [x] Average response time
+- [x] Session statistics
 
 ### Debug Mode [S]
 
-- [ ] Verbose flag (`-v`, `--debug`)
-- [ ] Dump payloads
-- [ ] Export session data
-- [ ] Connection diagnostics
+- [x] Verbose flag (`-v`, `--debug`)
+- [x] Dump payloads
+- [x] Export session data
+- [x] Connection diagnostics
 
 ---
 
@@ -255,21 +255,22 @@ flowchart LR
     B1 --> B2[zsh]
     B2 --> B3[fish]
     
-    style A0 fill:#2d3748,stroke:#a0aec0,color:#fff
-    style B0 fill:#2d3748,stroke:#a0aec0,color:#fff
+    style A0 fill:#1a365d,stroke:#63b3ed,color:#fff
+    style B0 fill:#22543d,stroke:#68d391,color:#fff
 ```
 
 ### PyPI Package [M]
 
 - [ ] Package to PyPI
 - [ ] Release workflow
-- [ ] Version management
+- [x] Version management
 
 ### Shell Completions [S]
 
-- [ ] Bash completion
-- [ ] Zsh completion
+- [x] Bash completion
+- [x] Zsh completion
 - [ ] Fish completion
+pletion
 
 ---
 
