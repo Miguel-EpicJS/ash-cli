@@ -139,8 +139,10 @@ def get_user_input(
             search_cursor = 0
 
             while True:
-                prompt_text = "/: " if search_mode else (
-                    "[green]>[/green] " if line_num == 0 else "... "
+                prompt_text = (
+                    "/: "
+                    if search_mode
+                    else ("[green]>[/green] " if line_num == 0 else "... ")
                 )
                 console.print(prompt_text + user_input, end="")
                 if search_mode:
@@ -170,7 +172,9 @@ def get_user_input(
                         break
                     elif key == "escape[B":
                         if search_mode and search_results:
-                            search_cursor = min(len(search_results) - 1, search_cursor + 1)
+                            search_cursor = min(
+                                len(search_results) - 1, search_cursor + 1
+                            )
                             user_input = search_results[search_cursor]
                         break
                     elif key == "\t":
@@ -186,7 +190,11 @@ def get_user_input(
                             user_input = user_input[:-1] + "\n"
                             line_num += 1
                             break
-                        if history and user_input.strip() and not user_input.startswith("/"):
+                        if (
+                            history
+                            and user_input.strip()
+                            and not user_input.startswith("/")
+                        ):
                             history.insert(0, user_input.strip())
                         return user_input.strip()
                     elif key == "\x7f" or ord(key) == 127:
@@ -195,7 +203,9 @@ def get_user_input(
                             sys.stdout.write("\b \b")
                             sys.stdout.flush()
                             if search_mode:
-                                search_results = _search_history(history or [], search_query)
+                                search_results = _search_history(
+                                    history or [], search_query
+                                )
                                 search_cursor = 0
                     elif key == "/":
                         if not search_mode and line_num == 0 and not user_input:
@@ -215,7 +225,9 @@ def get_user_input(
                         sys.stdout.flush()
                         if search_mode:
                             search_query = user_input
-                            search_results = _search_history(history or [], search_query)
+                            search_results = _search_history(
+                                history or [], search_query
+                            )
                             search_cursor = 0
 
                 if not is_multi:
@@ -311,7 +323,9 @@ def run(config: Config, session: Session | None = None) -> None:
                         new_model = resolve_model(new_model_id, config)
                         if new_model:
                             config.model = new_model
-                            console.print(f"[green]Switched to model: {new_model_id}[/green]")
+                            console.print(
+                                f"[green]Switched to model: {new_model_id}[/green]"
+                            )
                         else:
                             console.print(f"[red]Unknown model: {new_model_id}[/red]")
                     continue
@@ -456,8 +470,12 @@ def run(config: Config, session: Session | None = None) -> None:
                             if usage:
                                 current_session.usage.add(
                                     Usage(
-                                        prompt_tokens=getattr(usage, "prompt_tokens", 0),
-                                        completion_tokens=getattr(usage, "completion_tokens", 0),
+                                        prompt_tokens=getattr(
+                                            usage, "prompt_tokens", 0
+                                        ),
+                                        completion_tokens=getattr(
+                                            usage, "completion_tokens", 0
+                                        ),
                                         total_tokens=getattr(usage, "total_tokens", 0),
                                     )
                                 )

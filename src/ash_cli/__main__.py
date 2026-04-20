@@ -73,9 +73,7 @@ def _parse_args() -> Args:
         choices=["bash", "zsh"],
         help="Generate shell completions",
     )
-    parser.add_argument(
-        "--version", action="version", version=f"ash-cli {__version__}"
-    )
+    parser.add_argument("--version", action="version", version=f"ash-cli {__version__}")
     ns = parser.parse_args()
     return Args(
         model=ns.model,
