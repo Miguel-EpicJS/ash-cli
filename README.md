@@ -1,24 +1,45 @@
-# Ash CLI - Your Local AI Wingman ⚡
+# Ash CLI
+
+## A local-first AI assistant for the terminal
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/release/python-3130/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
-**Ash CLI** is a privacy-focused, high-performance terminal assistant designed for developers who want the intelligence of large language models without the cloud. Built on the **Agno** framework and powered by **Qwen 3.5 (4B)** via **llama.cpp**, Ash provides a fast, offline, and secure way to interact with AI directly from your command line.
+Ash is a privacy-focused terminal assistant for developers who want LLM capabilities without sending their prompts or code to a hosted service. It uses the **Agno** framework, **Qwen 3.5 (4B)**, and an OpenAI-compatible **llama.cpp** server.
+
+The project is also a practical reference for building local AI applications with streaming output, persistent sessions, command validation, observability, and a tested CLI workflow.
 
 ---
 
 ## Why Ash?
 
-- 🔒 **Privacy-First**: No data ever leaves your machine. Perfect for proprietary codebases and sensitive environments.
-- 🚀 **Blazing Fast**: Optimized for local CPUs using GGUF quantization. No API latency, no rate limits.
-- 🛠️ **Developer Centric**: Outputs ready-to-use bash commands with one-click execution or copy-to-clipboard.
-- 💾 **Smart Sessions**: Fully persistent history saved in SQLite, allowing you to resume conversations across terminal sessions.
-- 🎨 **Beautiful TUI**: A rich terminal interface with streaming responses, "thinking" panels, and Vim-style navigation.
+- **Private by default:** prompts and responses stay on the local machine.
+- **Model-flexible:** connect to local or OpenAI-compatible inference servers.
+- **Developer-focused:** generate, validate, copy, or execute shell commands.
+- **Persistent sessions:** save, load, rename, export, and import conversations.
+- **Observable:** track tokens, latency, API calls, and session statistics.
+- **Interactive TUI:** streaming responses, themes, history search, and Vim-style navigation.
+
+## Architecture
+
+```text
+CLI arguments and environment
+              |
+        Config system
+              |
+     Agno agent + llama.cpp
+              |
+       Streaming Rich TUI
+          /           \
+  command safety    sessions
+                       |
+                 local telemetry
+```
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```text
 ash-cli/
@@ -38,14 +59,14 @@ ash-cli/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
-### 1. Prerequisites
+### Prerequisites
 
 - **Python 3.13+**
 - **uv**: The fastest Python package manager. [Install uv](https://github.com/astral-sh/uv).
 
-### 2. Installation
+### Installation
 
 Clone the repository and sync dependencies:
 
@@ -55,7 +76,7 @@ cd ash-cli
 uv sync
 ```
 
-### 3. Start the Local Inference Server
+### Start the Local Inference Server
 
 Ash requires a `llama.cpp` server running the **Qwen 3.5 4B** model.
 
@@ -65,7 +86,7 @@ Ash requires a `llama.cpp` server running the **Qwen 3.5 4B** model.
     ./llama-server -m models/qwen3.5-4b-q4_K_M.gguf --port 8080 --host 0.0.0.0
     ```
 
-### 4. Launch Ash
+### Launch Ash
 
 ```bash
 uv run ash-cli
@@ -73,7 +94,7 @@ uv run ash-cli
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 ### CLI Usage
 
@@ -93,7 +114,7 @@ Ash supports several command-line flags to customize your experience:
 | `--reset` | Reset all configurations to defaults. |
 | `--debug` | Enable verbose logging for troubleshooting. |
 
-### ⌨️ TUI Commands
+### TUI Commands
 
 Once inside the interactive TUI, you can use several slash-commands:
 
@@ -106,7 +127,7 @@ Once inside the interactive TUI, you can use several slash-commands:
 - `/stats`: View aggregate usage statistics across *all* sessions.
 - `/rename <id> <name>`: Rename the session you are in.
 
-### 🎮 TUI Shortcuts
+### TUI Shortcuts
 
 - **Enter**: Send message or execute command.
 - **`\` at end of line**: Continue on a new line (Multi-line input).
@@ -118,7 +139,7 @@ Once inside the interactive TUI, you can use several slash-commands:
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 Ash can be configured via environment variables or a local configuration file.
 
@@ -139,7 +160,7 @@ Edit `src/ash_cli/config.py` to define custom model presets or change the defaul
 
 ---
 
-## 📊 Observability
+## Observability
 
 Ash tracks everything locally so you can stay in control:
 - **Token Tracking**: Prompt, completion, and total tokens.
@@ -150,7 +171,7 @@ Use `/metrics` or `/stats` to see your data.
 
 ---
 
-## 🛠️ Development
+## Development
 
 ### Linting & Formatting
 
@@ -173,11 +194,11 @@ uv run pytest
 
 ---
 
-## 📜 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Agno](https://docs.agno.com) for the powerful agent framework.
 - [llama.cpp](https://github.com/ggerganov/llama.cpp) for efficient local inference.
